@@ -1,0 +1,67 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg
+*.egg-info/
+*.pyo
+
+# Virtual Environment
+venv/
+ENV/
+env/
+.venv/
+
+# Django
+*.sqlite3
+db.sqlite3
+*.log
+*.pot
+*.pyc
+*.pyd
+*.pdb
+*.db
+*.dat
+*.bak
+*.tmp
+*.swp
+*.swo
+*.coverage
+htmlcov/
+*.mo
+*.cache
+*.manifest
+*.spec
+
+# Django specific
+*.pyc
+*.pyo
+*.log
+media/
+staticfiles/
+static/
+local_settings.py
+settings_local.py
+.env
+
+# MongoDB (if you ever dump or export data)
+*.bson
+*.json
+dump/
+data/
+mongod.lock
+
+# VS Code
+.vscode/
+
+# Git
+*.orig
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node/npm (if using frontend tools)
+node_modules/
+npm-debug.log
+yarn-error.log
