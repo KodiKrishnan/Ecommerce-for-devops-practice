@@ -24,34 +24,78 @@
 
 <hr class="my-6">
 
-<!-- ✅ Reviews Section -->
-<div class="mt-8">
-    <h2 class="text-xl font-semibold mb-4">Customer Reviews</h2>
-
-    {% for review in reviews %}
-    <div class="mb-4 border-b pb-2">
-        <p class="text-yellow-500 font-bold">{{ review.rating }}★</p>
-        <p class="text-sm text-gray-700">{{ review.comment }}</p>
-        <p class="text-xs text-gray-500">By {{ review.user.username }} on {{ review.created_at|date:"M d, Y" }}</p>
-    </div>
-    {% empty %}
-    <p class="text-gray-500">No reviews yet.</p>
+<!-- ⭐ Average Rating -->
+{% if average_rating %}
+<div class="flex items-center mt-2 mb-4">
+    {% for i in "12345" %}
+        {% if forloop.counter <= average_rating %}
+            <span class="text-yellow-500 text-xl">★</span>
+        {% else %}
+            <span class="text-gray-300 text-xl">★</span>
+        {% endif %}
     {% endfor %}
 </div>
-
-<!-- ✅ Review Form -->
-{% if user.is_authenticated %}
-<div class="mt-8">
-    <h3 class="text-lg font-semibold mb-2">Write a Review</h3>
-    <form method="post" class="space-y-4">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Submit Review</button>
-    </form>
-</div>
-{% else %}
-<p class="text-sm mt-4">Please <a href="{% url 'login' %}" class="text-blue-600 underline">login</a> to write a review.</p>
 {% endif %}
+
+<!-- 📝 Submit Review -->
+{% if user.is_authenticated %}
+    <div class="bg-white p-4 rounded shadow mb-6">
+        <h3 class="text-xl font-semibold mb-4">Leave a Review</h3>
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-4">
+                {{ form.rating.label_tag }}<br>
+                {{ form.rating }}
+            </div>
+            <div class="mb-4">
+                {{ form.comment.label_tag }}<br>
+                {{ form.comment }}
+            </div>
+            <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                Submit Review
+            </button>
+        </form>
+    </div>
+{% else %}
+    <p class="text-gray-600 italic">Please <a href="{% url 'login' %}" class="text-blue-600 underline">log in</a> to leave a review.</p>
+{% endif %}
+
+<!-- 💬 Display Reviews -->
+<h3 class="text-xl font-semibold mt-6 mb-4">Customer Reviews</h3>
+{% for review in reviews %}
+    <div class="mb-6 border-b pb-4">
+        <div class="flex items-center mb-1">
+            <strong class="mr-2">{{ review.user.username }}</strong>
+
+            <!-- ✅ Star display per review -->
+            {% for i in "12345" %}
+                {% if forloop.counter <= review.rating %}
+                    <span class="text-yellow-500 text-sm">★</span>
+                {% else %}
+                    <span class="text-gray-300 text-sm">★</span>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <p class="text-gray-700">{{ review.comment }}</p>
+        <p class="text-xs text-gray-400">Reviewed on {{ review.created_at|date:"M d, Y" }}</p>
+    </div>
+{% endfor %}
+<!-- ⭐ Display Avg Rating -->
+<div class="flex items-center mt-2">
+    {% for i in "12345" %}
+        {% if forloop.counter <= product.avg_rating|default:0 %}
+            <span class="text-yellow-500 text-sm">★</span>
+        {% else %}
+            <span class="text-gray-300 text-sm">★</span>
+        {% endif %}
+    {% endfor %}
+
+    <span class="ml-2 text-sm text-gray-600">
+        {{ product.avg_rating|default:"0.0"|floatformat:1 }} / 5
+    </span>
+</div>
+
 
 
 {% endblock %}

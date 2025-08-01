@@ -6,6 +6,6 @@ class ReviewForm(forms.ModelForm):
         model = Review
         fields = ['rating', 'comment']
         widgets = {
-            'rating': forms.Select(choices=[(i, f'{i} ★') for i in range(1, 6)]),
-            'comment': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Write your review here...'}),
+            'rating': forms.Select(attrs={'class': 'w-full p-2 border rounded'}),
+            'comment': forms.Textarea(attrs={'class': 'w-full p-2 border rounded', 'rows': 4}),
         }

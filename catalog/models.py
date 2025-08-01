@@ -33,12 +33,9 @@ class Product(models.Model):
 
 class Review(models.Model):
     product = models.ForeignKey('Product', related_name='reviews', on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)  # Temporarily nullable
     rating = models.PositiveIntegerField(choices=[(i, f'{i} ★') for i in range(1, 6)])
-    comment = models.TextField()
+    comment = models.TextField(null=True, blank=True)  # Temporarily nullable
     created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f'{self.rating}★ by {self.user.username}'
 
     
