@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load static %}
 {% block content %}
 
 <h1 class="text-3xl font-bold mb-6 text-center">Product Catalog</h1>
@@ -33,7 +33,10 @@
     {% for product in page_obj %}
     <div class="bg-white rounded-lg shadow-md p-4 hover:shadow-xl transition duration-300">
         <a href="{% url 'product_detail' slug=product.slug %}">
-            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="h-48 w-full object-contain mb-3">
+            <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static 'images/placeholder.png' %}{% endif %}"
+     class="h-48 w-full object-contain mb-3 rounded shadow"
+     alt="{{ product.name }}">
+
             <h2 class="text-xl font-semibold text-blue-700 hover:underline">{{ product.name }}</h2>
         </a>
         <p class="text-sm text-gray-600 mt-1 mb-2">{{ product.description|truncatechars:100 }}</p>
@@ -68,6 +71,38 @@
            class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Next</a>
     {% endif %}
 </div>
+
+<!-- ✅ Review Section -->
+<div class="mt-10">
+    <h2 class="text-xl font-bold mb-4">Customer Reviews</h2>
+
+    {% if reviews %}
+        <div class="space-y-4 mb-6">
+            {% for review in reviews %}
+                <div class="border p-4 rounded bg-gray-50">
+                    <p class="text-yellow-500 font-bold">{{ review.rating }}★</p>
+                    <p class="text-gray-800">{{ review.comment }}</p>
+                    <p class="text-sm text-gray-500 mt-2">By {{ review.user.username }} on {{ review.created_at|date:"M d, Y" }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-gray-500 mb-6">No reviews yet.</p>
+    {% endif %}
+
+    {% if user.is_authenticated %}
+    <form method="post" class="space-y-4">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+            Submit Review
+        </button>
+    </form>
+    {% else %}
+    <p class="text-sm text-blue-600">Please <a href="{% url 'login' %}" class="underline">login</a> to leave a review.</p>
+    {% endif %}
+</div>
+
 
 
 {% endblock %}

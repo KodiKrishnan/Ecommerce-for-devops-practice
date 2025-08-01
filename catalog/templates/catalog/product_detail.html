@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block content %}
+{% load static %}
+
+<div class="max-w-4xl mx-auto py-10">
+    <div class="grid md:grid-cols-2 gap-6">
+        <div>
+            <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static 'images/placeholder.png' %}{% endif %}"
+     class="w-full h-80 object-contain rounded shadow"
+     alt="{{ product.name }}">
+
+        </div>
+        <div>
+            <h1 class="text-3xl font-bold mb-2">{{ product.name }}</h1>
+            <p class="text-gray-600 text-sm mb-4">Category: {{ product.category.name }}</p>
+            <p class="text-lg text-gray-800 mb-4">{{ product.description }}</p>
+            <p class="text-2xl font-bold text-green-700 mb-6">₹{{ product.price }}</p>
+
+            <button class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded">
+                Add to Cart
+            </button>
+        </div>
+    </div>
+
+<hr class="my-6">
+
+<!-- ✅ Reviews Section -->
+<div class="mt-8">
+    <h2 class="text-xl font-semibold mb-4">Customer Reviews</h2>
+
+    {% for review in reviews %}
+    <div class="mb-4 border-b pb-2">
+        <p class="text-yellow-500 font-bold">{{ review.rating }}★</p>
+        <p class="text-sm text-gray-700">{{ review.comment }}</p>
+        <p class="text-xs text-gray-500">By {{ review.user.username }} on {{ review.created_at|date:"M d, Y" }}</p>
+    </div>
+    {% empty %}
+    <p class="text-gray-500">No reviews yet.</p>
+    {% endfor %}
+</div>
+
+<!-- ✅ Review Form -->
+{% if user.is_authenticated %}
+<div class="mt-8">
+    <h3 class="text-lg font-semibold mb-2">Write a Review</h3>
+    <form method="post" class="space-y-4">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Submit Review</button>
+    </form>
+</div>
+{% else %}
+<p class="text-sm mt-4">Please <a href="{% url 'login' %}" class="text-blue-600 underline">login</a> to write a review.</p>
+{% endif %}
+
+
+{% endblock %}

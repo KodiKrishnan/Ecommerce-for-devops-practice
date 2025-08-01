@@ -13,13 +13,10 @@ class ProductAdmin(admin.ModelAdmin):
     search_fields = ('name', 'description')
     prepopulated_fields = {'slug': ('name',)}
 
-# @admin.register(Review)
-# class ReviewAdmin(admin.ModelAdmin):
-#     list_display = ('product', 'title', 'rating', 'helpful_votes', 'verified', 'created_at')
-#     list_filter = ('rating', 'verified')
-#     search_fields = ('title', 'content')
-
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
-    list_display = ('product', 'user', 'rating', 'created_at')
-    list_filter = ('rating', 'created_at')
+    list_display = ('product', 'get_username', 'rating', 'created_at')
+
+    def get_username(self, obj):
+        return obj.user.username
+    get_username.short_description = 'User'

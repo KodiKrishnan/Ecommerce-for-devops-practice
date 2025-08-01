@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+
 class Category(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True)
@@ -13,13 +14,20 @@ class Product(models.Model):
     slug = models.SlugField(unique=True)
     description = models.TextField()
     price = models.FloatField()
-    #price = models.DecimalField(max_digits=10, decimal_places=2)
     stock = models.IntegerField()
     image = models.ImageField(upload_to='products/')
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.name
+
+
+# class Review(models.Model):
+#     product = models.ForeignKey('Product', related_name='reviews', on_delete=models.CASCADE)
+#     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)  # allow null
+#     rating = models.PositiveIntegerField(choices=[(i, f'{i} ★') for i in range(1, 6)])
+#     comment = models.TextField(null=True, blank=True)  # allow null
+#     created_at = models.DateTimeField(auto_now_add=True)
 
 
 
@@ -33,3 +41,4 @@ class Review(models.Model):
     def __str__(self):
         return f'{self.rating}★ by {self.user.username}'
 
+    
