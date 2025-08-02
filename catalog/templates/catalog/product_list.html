@@ -41,6 +41,17 @@
 
         <p class="text-sm text-gray-600 mt-1 mb-2">{{ product.description|truncatechars:100 }}</p>
         <p class="text-lg font-bold text-green-600">₹{{ product.price }}</p>
+        {% if product.stock > 20 %}
+        <p class="text-green-600 text-sm mb-1">In Stock: {{ product.stock }}</p>
+        {% elif product.stock > 10 %}
+        <p class="text-yellow-600 text-sm mb-1">In Stock: {{ product.stock }}</p>
+        {% elif product.stock > 0 %}
+            <p class="text-red-500 text-sm mb-1">In Stock: {{ product.stock }}</p>
+        {% else %}
+            <p class="text-red-700 text-sm font-bold mb-1">Out of Stock</p>
+        {% endif %}
+
+
 
         <!-- ⭐ Average rating -->
         <div class="flex items-center mt-2">
@@ -87,39 +98,6 @@
         </a>
     {% endif %}
 </div>
-
-
-<!-- ✅ Review Section -->
-<!-- <div class="mt-10">
-    <h2 class="text-xl font-bold mb-4">Customer Reviews</h2>
-
-    {% if reviews %}
-        <div class="space-y-4 mb-6">
-            {% for review in reviews %}
-                <div class="border p-4 rounded bg-gray-50">
-                    <p class="text-yellow-500 font-bold">{{ review.rating }}★</p>
-                    <p class="text-gray-800">{{ review.comment }}</p>
-                    <p class="text-sm text-gray-500 mt-2">By {{ review.user.username }} on {{ review.created_at|date:"M d, Y" }}</p>
-                </div>
-            {% endfor %}
-        </div>
-    {% else %}
-        <p class="text-gray-500 mb-6">No reviews yet.</p>
-    {% endif %}
-
-    {% if user.is_authenticated %}
-    <form method="post" class="space-y-4">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-            Submit Review
-        </button>
-    </form>
-    {% else %}
-    <p class="text-sm text-blue-600">Please <a href="{% url 'login' %}" class="underline">login</a> to leave a review.</p>
-    {% endif %}
-</div> -->
-
 
 
 {% endblock %}
