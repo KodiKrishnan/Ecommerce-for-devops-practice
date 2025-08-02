@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.conf import settings
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
@@ -20,6 +21,15 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+class HelpfulVote(models.Model):
+    review = models.ForeignKey('Review', on_delete=models.CASCADE, related_name='votes')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    is_helpful = models.BooleanField()
+
+    class Meta:
+        unique_together = ('review', 'user')  # one vote per user per review
+
 
 
 # class Review(models.Model):

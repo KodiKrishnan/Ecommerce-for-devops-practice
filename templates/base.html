@@ -5,6 +5,7 @@
     <title>{% block title %}E-commerce Catalog{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
+
 <body class="bg-gray-100 text-gray-900">
     <!-- 🔹 Header / Navbar -->
     <header class="bg-white shadow mb-6">
@@ -31,5 +32,56 @@
         {% endblock %}
     </main>
 </body>
+<!-- 🌐 Footer -->
+<footer class="bg-gray-900 text-gray-300 py-10 mt-10">
+  <div class="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
+    
+    <!-- 🌟 Company Info -->
+    <div>
+      <h2 class="text-xl font-semibold text-white mb-4">About Us</h2>
+      <p class="text-sm text-gray-400">
+        We are a modern e-commerce platform focused on delivering high-quality tech products and accessories with exceptional service and secure delivery.
+      </p>
+    </div>
+
+    <!-- 📚 Quick Links -->
+    <div>
+      <h2 class="text-xl font-semibold text-white mb-4">Quick Links</h2>
+      <ul class="space-y-2 text-sm">
+        <li><a href="#" class="hover:underline">Home</a></li>
+        <li><a href="#" class="hover:underline">Shop</a></li>
+        <li><a href="#" class="hover:underline">Categories</a></li>
+        <li><a href="#" class="hover:underline">Contact</a></li>
+      </ul>
+    </div>
+
+    <!-- 🏢 Contact Info -->
+    <div>
+      <h2 class="text-xl font-semibold text-white mb-4">Contact Us</h2>
+      <ul class="text-sm space-y-2">
+        <li>📍 123, Tech Street, Chennai, India</li>
+        <li>📞 +91 63830 07010</li>
+        <li>✉️ support@eshop.com</li>
+      </ul>
+    </div>
+
+    <!-- 📲 Follow Us -->
+    <div>
+      <h2 class="text-xl font-semibold text-white mb-4">Follow Us</h2>
+      <div class="flex space-x-4">
+        <a href="https://www.linkedin.com/in/kodii2307/" target="_blank" rel="noopener noreferrer" class="hover:text-white">🔗 LinkedIn</a>
+        <a href="#" class="hover:text-white">🐦 X</a>
+        <a href=" https://www.instagram.com/kodii_krishnan" target="_blank" rel="noopener noreferrer" class="hover:text-white">📸 Instagram</a>
+        <a href="#" class="hover:text-white"></a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 📝 Copyright -->
+  <div class="border-t border-gray-700 mt-10 pt-6 text-center text-sm text-gray-500">
+    © {{ now|date:"Y" }} E-Shop. All rights reserved.
+  </div>
+</footer>
 
 </html>

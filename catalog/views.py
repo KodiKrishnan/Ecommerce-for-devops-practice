@@ -3,7 +3,9 @@ from django.shortcuts import render
 from .models import Product, Category
 
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Product, Review
+from .models import Product, Review, HelpfulVote
+
+
 from .forms import ReviewForm
 from django.contrib.auth.decorators import login_required
 
@@ -12,6 +14,10 @@ from django.contrib.auth import login
 from django.shortcuts import render, redirect
 from django.db.models import Avg
 from django.db.models import Avg, Count
+
+
+from django.views.decorators.http import require_POST
+from django.http import JsonResponse
 
 def signup(request):
     if request.method == 'POST':
@@ -49,8 +55,6 @@ def product_list(request):
         count = reviews.count()
         product.avg_rating = round(avg)
         product.review_count = count
-        avg_rating = product.reviews.aggregate(avg=Avg('rating'))['avg'] or 0
-        avg_rating = round(avg_rating)
 
         # Filter by rating if needed
         if rating:
@@ -102,3 +106,28 @@ def product_detail(request, slug):
         'average_rating': avg_rating, 
     })
 
+@require_POST
+@login_required
+def vote_helpful(request, review_id):
+    review = get_object_or_404(Review, id=review_id)
+    is_helpful = request.POST.get('is_helpful') == 'true'
+
+    try:
+        vote = HelpfulVote.objects.get(review=review, user=request.user)
+        vote.is_helpful = is_helpful
+        vote.save()
+    except HelpfulVote.DoesNotExist:
+        vote = HelpfulVote.objects.create(
+            review=review,
+            user=request.user,
+            is_helpful=is_helpful
+        )
+
+    # ✅ Separate filtering to avoid complex SQL Djongo can't parse
+    all_votes = HelpfulVote.objects.filter(review=review)
+    helpful_votes = [v for v in all_votes if v.is_helpful]
+
+    helpful_count = len(helpful_votes)
+    total_votes = all_votes.count()
+
+    return JsonResponse({'helpful': helpful_count, 'total': total_votes})

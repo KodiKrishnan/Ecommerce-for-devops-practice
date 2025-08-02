@@ -1,14 +1,13 @@
 {% extends "base.html" %}
-{% block content %}
 {% load static %}
 
+{% block content %}
 <div class="max-w-4xl mx-auto py-10">
     <div class="grid md:grid-cols-2 gap-6">
         <div>
             <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static 'images/placeholder.png' %}{% endif %}"
-     class="w-full h-80 object-contain rounded shadow"
-     alt="{{ product.name }}">
-
+                 class="w-full h-80 object-contain rounded shadow"
+                 alt="{{ product.name }}">
         </div>
         <div>
             <h1 class="text-3xl font-bold mb-2">{{ product.name }}</h1>
@@ -22,27 +21,26 @@
         </div>
     </div>
 
-<hr class="my-6">
+    <hr class="my-6">
 
-<!-- ⭐ Average Rating -->
-{% if average_rating %}
-<div class="flex items-center mt-2 mb-4">
-    {% for i in "12345" %}
-        {% if forloop.counter <= average_rating %}
-            <span class="text-yellow-500 text-xl">★</span>
-        {% else %}
-            <span class="text-gray-300 text-xl">★</span>
-        {% endif %}
-    {% endfor %}
-    <span class="ml-2 text-gray-700 text-base">
-        {{ average_rating|floatformat:1 }} / 5 ({{ reviews|length }} review{{ reviews|length|pluralize }})
-    </span>
-</div>
-{% endif %}
+    <!-- ⭐ Average Rating -->
+    {% if average_rating %}
+    <div class="flex items-center mt-2 mb-4">
+        {% for i in "12345" %}
+            {% if forloop.counter <= average_rating %}
+                <span class="text-yellow-500 text-xl">★</span>
+            {% else %}
+                <span class="text-gray-300 text-xl">★</span>
+            {% endif %}
+        {% endfor %}
+        <span class="ml-2 text-gray-700 text-base">
+            {{ average_rating|floatformat:1 }} / 5 ({{ reviews|length }} review{{ reviews|length|pluralize }})
+        </span>
+    </div>
+    {% endif %}
 
-
-<!-- 📝 Submit Review -->
-{% if user.is_authenticated %}
+    <!-- 📝 Submit Review -->
+    {% if user.is_authenticated %}
     <div class="bg-white p-4 rounded shadow mb-6">
         <h3 class="text-xl font-semibold mb-4">Leave a Review</h3>
         <form method="post">
@@ -60,18 +58,18 @@
             </button>
         </form>
     </div>
-{% else %}
-    <p class="text-gray-600 italic">Please <a href="{% url 'login' %}" class="text-blue-600 underline">log in</a> to leave a review.</p>
-{% endif %}
+    {% else %}
+    <p class="text-gray-600 italic">
+        Please <a href="{% url 'login' %}" class="text-blue-600 underline">log in</a> to leave a review.
+    </p>
+    {% endif %}
 
-<!-- 💬 Display Reviews -->
-<h3 class="text-xl font-semibold mt-6 mb-4">Customer Reviews</h3>
-{% for review in reviews %}
+    <!-- 💬 Display Reviews -->
+    <h3 class="text-xl font-semibold mt-6 mb-4">Customer Reviews</h3>
+    {% for review in reviews %}
     <div class="mb-6 border-b pb-4">
         <div class="flex items-center mb-1">
             <strong class="mr-2">{{ review.user.username }}</strong>
-
-            <!-- ✅ Star display per review -->
             {% for i in "12345" %}
                 {% if forloop.counter <= review.rating %}
                     <span class="text-yellow-500 text-sm">★</span>
@@ -83,24 +81,50 @@
 
         <p class="text-gray-700">{{ review.comment }}</p>
         <p class="text-xs text-gray-400">Reviewed on {{ review.created_at|date:"M d, Y" }}</p>
+
+        <!-- ✅ Helpful vote section -->
+        <div class="text-sm text-gray-600 mt-2">
+            <button class="vote-btn text-blue-600 hover:underline mr-2"
+                    data-review-id="{{ review.id }}" data-helpful="true">
+                Yes
+            </button>
+            <button class="vote-btn text-blue-600 hover:underline"
+                    data-review-id="{{ review.id }}" data-helpful="false">
+                No
+            </button>
+            <span id="vote-count-{{ review.id }}">
+                {{ review.helpful_votes.count }} out of {{ review.votes.count }} found this helpful
+            </span>
+        </div>
     </div>
-{% endfor %}
-
-<!-- ⭐ Display Avg Rating -->
-<!-- <div class="flex items-center mt-2">
-    {% for i in "12345" %}
-        {% if forloop.counter <= product.avg_rating|default:0 %}
-            <span class="text-yellow-500 text-sm">★</span>
-        {% else %}
-            <span class="text-gray-300 text-sm">★</span>
-        {% endif %}
+    {% empty %}
+    <p class="text-gray-600 italic">No reviews yet. Be the first to review!</p>
     {% endfor %}
+</div>
 
-    <span class="ml-2 text-sm text-gray-600">
-        {{ product.avg_rating|default:"0.0"|floatformat:1 }} / 5
-    </span>
-</div> -->
+<!-- ✅ JS for helpful vote -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.vote-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const reviewId = btn.dataset.reviewId;
+            const isHelpful = btn.dataset.helpful;
 
-
-
+            fetch(`/review/${reviewId}/vote/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `is_helpful=${isHelpful}`
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById(`vote-count-${reviewId}`).innerText =
+                    `${data.helpful} out of ${data.total} found this helpful`;
+            });
+        });
+    });
+});
+</script>
 {% endblock %}
