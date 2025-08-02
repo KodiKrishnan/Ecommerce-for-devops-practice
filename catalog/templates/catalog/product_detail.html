@@ -34,8 +34,12 @@
             <span class="text-gray-300 text-xl">★</span>
         {% endif %}
     {% endfor %}
+    <span class="ml-2 text-gray-700 text-base">
+        {{ average_rating|floatformat:1 }} / 5 ({{ reviews|length }} review{{ reviews|length|pluralize }})
+    </span>
 </div>
 {% endif %}
+
 
 <!-- 📝 Submit Review -->
 {% if user.is_authenticated %}
@@ -81,8 +85,9 @@
         <p class="text-xs text-gray-400">Reviewed on {{ review.created_at|date:"M d, Y" }}</p>
     </div>
 {% endfor %}
+
 <!-- ⭐ Display Avg Rating -->
-<div class="flex items-center mt-2">
+<!-- <div class="flex items-center mt-2">
     {% for i in "12345" %}
         {% if forloop.counter <= product.avg_rating|default:0 %}
             <span class="text-yellow-500 text-sm">★</span>
@@ -94,7 +99,7 @@
     <span class="ml-2 text-sm text-gray-600">
         {{ product.avg_rating|default:"0.0"|floatformat:1 }} / 5
     </span>
-</div>
+</div> -->
 
 
 

@@ -11,7 +11,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from django.shortcuts import render, redirect
 from django.db.models import Avg
-
+from django.db.models import Avg, Count
 
 def signup(request):
     if request.method == 'POST':
@@ -33,23 +33,37 @@ def product_list(request):
     products = Product.objects.all()
     categories = Category.objects.all()
 
+    # Filtering
     if category_id:
         products = products.filter(category_id=category_id)
     if price_min:
         products = products.filter(price__gte=price_min)
     if price_max:
         products = products.filter(price__lte=price_max)
-    if rating:
-        try:
-            # ✅ Option 1: Products with at least one review with this rating
-            products = products.filter(reviews__rating=rating)
-            
-            # 🔁 OR Option 2: Filter by average rating (uncomment below if you prefer this)
-            # products = products.annotate(avg_rating=Avg('reviews__rating')).filter(avg_rating__gte=float(rating))
-        except ValueError:
-            pass  # Ignore bad rating values
 
-    paginator = Paginator(products, 9)
+    # Manual rating aggregation
+    filtered_products = []
+    for product in products:
+        reviews = product.reviews.all()
+        avg = reviews.aggregate(avg=Avg('rating'))['avg'] or 0
+        count = reviews.count()
+        product.avg_rating = round(avg)
+        product.review_count = count
+        avg_rating = product.reviews.aggregate(avg=Avg('rating'))['avg'] or 0
+        avg_rating = round(avg_rating)
+
+        # Filter by rating if needed
+        if rating:
+            try:
+                if product.avg_rating >= float(rating):
+                    filtered_products.append(product)
+            except ValueError:
+                continue
+        else:
+            filtered_products.append(product)
+
+    # Pagination
+    paginator = Paginator(filtered_products, 9)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
@@ -58,6 +72,7 @@ def product_list(request):
         'products': page_obj,
         'categories': categories,
     })
+
 
 def product_detail(request, slug):
     product = get_object_or_404(Product, slug=slug)
@@ -84,6 +99,6 @@ def product_detail(request, slug):
         'product': product,
         'reviews': reviews,
         'form': form,
-        'average_rating': avg_rating,  # ✅ Pass correctly!
+        'average_rating': avg_rating, 
     })
 
